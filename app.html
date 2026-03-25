@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusMint App</title>
+  <meta
+    name="description"
+    content="Use CampusMint to set a student budget, track expenses, and think before spending."
+  >
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap"
+    rel="stylesheet"
+  >
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="CampusMint home">
+        <span class="brand-mark">C</span>
+        <span class="brand-text">CampusMint</span>
+      </a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="site-nav">
+        Menu
+      </button>
+      <nav class="site-nav" id="site-nav">
+        <a href="index.html">Home</a>
+        <a href="#app">Budget App</a>
+        <a href="#expenses">Expenses</a>
+      </nav>
+    </header>
+
+    <main id="app">
+      <section class="hero section">
+        <div class="hero-copy">
+          <p class="eyebrow">Working student budget app</p>
+          <h1>Track your money and think before you spend it.</h1>
+          <p class="hero-text">
+            Set your monthly income, add a savings goal, and log purchases by category.
+            CampusMint gives you a clearer view of what is safe to spend.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#dashboard">Start Budgeting</a>
+            <a class="button button-secondary" href="index.html">Back To Home</a>
+          </div>
+        </div>
+
+        <div class="hero-panel">
+          <div class="panel panel-large">
+            <p class="panel-label">Live Student Dashboard</p>
+            <h2>See your income, spending, and safe-to-spend balance in one place.</h2>
+            <p>
+              Add your money and purchases below. The app saves data in this browser,
+              so your budget stays here when you refresh.
+            </p>
+          </div>
+          <div class="hero-grid">
+            <article class="panel">
+              <p class="stat-value" id="hero-balance">$0</p>
+              <p class="stat-label">Safe to spend</p>
+            </article>
+            <article class="panel">
+              <p class="stat-value" id="hero-goal">0%</p>
+              <p class="stat-label">Goal progress</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section app-section" id="dashboard">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Interactive app</p>
+            <h2>Your student budget dashboard.</h2>
+          </div>
+          <p class="section-note">Everything you enter stays in this browser using local storage.</p>
+        </div>
+
+        <div class="app-grid">
+          <section class="app-card summary-card">
+            <p class="card-index">Monthly overview</p>
+            <div class="summary-grid">
+              <article>
+                <span class="summary-label">Income</span>
+                <strong id="income-total">$0</strong>
+              </article>
+              <article>
+                <span class="summary-label">Spent</span>
+                <strong id="spent-total">$0</strong>
+              </article>
+              <article>
+                <span class="summary-label">Saved</span>
+                <strong id="saved-total">$0</strong>
+              </article>
+              <article class="summary-accent">
+                <span class="summary-label">Safe To Spend</span>
+                <strong id="remaining-total">$0</strong>
+              </article>
+            </div>
+          </section>
+
+          <section class="app-card chart-card">
+            <p class="card-index">Budget view</p>
+            <div class="chart-wrap">
+              <div id="budget-chart" class="budget-chart" aria-label="Budget pie chart"></div>
+              <div class="chart-legend">
+                <div class="legend-row">
+                  <span class="legend-swatch legend-spent"></span>
+                  <span>Spent</span>
+                  <strong id="chart-spent">$0</strong>
+                </div>
+                <div class="legend-row">
+                  <span class="legend-swatch legend-goal"></span>
+                  <span>Savings goal</span>
+                  <strong id="chart-goal">$0</strong>
+                </div>
+                <div class="legend-row">
+                  <span class="legend-swatch legend-safe"></span>
+                  <span>Safe to spend</span>
+                  <strong id="chart-safe">$0</strong>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="app-card status-card">
+            <p class="card-index">Budget health</p>
+            <h3 id="budget-status-title">You are still on track.</h3>
+            <p id="budget-status-text">
+              Add your income, savings goal, and expenses to see whether you are under control,
+              close to your limit, or spending beyond what is safe.
+            </p>
+            <div class="decision-badges">
+              <span id="budget-status-badge" class="pill pill-soft">Waiting for budget data</span>
+            </div>
+          </section>
+
+          <section class="app-card trend-card">
+            <p class="card-index">Spending by category</p>
+            <div id="bar-chart" class="bar-chart"></div>
+          </section>
+
+          <section class="app-card form-card">
+            <p class="card-index">Budget setup</p>
+            <form id="budget-form" class="stack-form">
+              <label>
+                Monthly income
+                <input type="number" id="income-input" min="0" max="999999" step="0.01" placeholder="1200">
+              </label>
+              <label>
+                Monthly savings goal
+                <input type="number" id="goal-input" min="0" max="999999" step="0.01" placeholder="300">
+              </label>
+              <button type="submit" class="button button-primary">Save Budget</button>
+            </form>
+          </section>
+
+          <section class="app-card form-card">
+            <p class="card-index">Add spending</p>
+            <form id="expense-form" class="stack-form">
+              <label>
+                Purchase name
+                <input type="text" id="expense-name" maxlength="40" placeholder="Late-night food run">
+              </label>
+              <label>
+                Amount
+                <input type="number" id="expense-amount" min="0" max="999999" step="0.01" placeholder="18.50">
+              </label>
+              <label>
+                Category
+                <select id="expense-category">
+                  <option value="Food">Food</option>
+                  <option value="Rent">Rent</option>
+                  <option value="Transport">Transport</option>
+                  <option value="School">School</option>
+                  <option value="Fun">Fun</option>
+                  <option value="Bills">Bills</option>
+                  <option value="Other">Other</option>
+                </select>
+              </label>
+              <label>
+                Why are you spending?
+                <select id="expense-reason">
+                  <option value="Need">Need</option>
+                  <option value="Want">Want</option>
+                  <option value="Urgent">Urgent</option>
+                  <option value="Social pressure">Social pressure</option>
+                  <option value="Long-term value">Long-term value</option>
+                </select>
+              </label>
+              <button type="submit" class="button button-primary">Add Expense</button>
+            </form>
+          </section>
+
+          <section class="app-card insight-card">
+            <p class="card-index">Spend check</p>
+            <h3 id="decision-title">Ready to make a smarter choice?</h3>
+            <p id="decision-text">
+              Add a purchase and CampusMint will tell you whether it looks like a need,
+              a want, or something worth pausing on before you spend.
+            </p>
+            <div class="decision-badges">
+              <span id="decision-badge" class="pill">Waiting for a purchase</span>
+              <span id="goal-status" class="pill pill-soft">Goal not set</span>
+            </div>
+          </section>
+
+          <section class="app-card categories-card">
+            <p class="card-index">Category totals</p>
+            <div id="category-list" class="category-list"></div>
+          </section>
+
+          <section class="app-card expenses-card" id="expenses">
+            <div class="expenses-head">
+              <div>
+                <p class="card-index">Recent spending</p>
+                <h3>Latest decisions</h3>
+              </div>
+              <button id="reset-button" type="button" class="button button-secondary">Reset App</button>
+            </div>
+            <div id="expense-list" class="expense-list"></div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>CampusMint</p>
+      <p>Bright budgeting support for college students and their future.</p>
+      <p id="year"></p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
