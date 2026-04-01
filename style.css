@@ -406,6 +406,7 @@ p {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: 1rem;
+  align-items: start;
 }
 
 .app-card {
@@ -425,15 +426,40 @@ p {
   grid-column: span 5;
 }
 
+.budget-form-card {
+  grid-column: span 7;
+}
+
+.expense-form-card {
+  grid-column: span 5;
+}
+
+.budget-form-card .stack-form {
+  gap: 1.35rem;
+}
+
+.budget-form-card .stack-form label {
+  gap: 0.65rem;
+}
+
+.budget-form-card .stack-form input {
+  min-height: 6rem;
+  padding: 1.5rem 1.1rem;
+  font-size: 1.2rem;
+}
+
 .insight-card,
-.categories-card,
 .status-card,
 .trend-card {
   grid-column: span 4;
 }
 
-.expenses-card {
+.categories-card {
   grid-column: span 8;
+}
+
+.expenses-card {
+  grid-column: 1 / -1;
 }
 
 .summary-grid {
@@ -488,9 +514,9 @@ p {
   height: 180px;
   border-radius: 50%;
   background: conic-gradient(
-    #3ba97f 0deg 120deg,
-    #9ad7bf 120deg 220deg,
-    #11795d 220deg 360deg
+    #e25555 0deg 120deg,
+    #f1c84b 120deg 220deg,
+    #1f9d68 220deg 360deg
   );
   position: relative;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6);
@@ -531,15 +557,15 @@ p {
 }
 
 .legend-spent {
-  background: #3ba97f;
+  background: #e25555;
 }
 
 .legend-goal {
-  background: #9ad7bf;
+  background: #f1c84b;
 }
 
 .legend-safe {
-  background: #11795d;
+  background: #1f9d68;
 }
 
 .status-card h3 {
@@ -629,6 +655,75 @@ p {
   margin-top: 1rem;
 }
 
+.decision-visual {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 0.85rem;
+}
+
+.decision-meter {
+  padding: 0.8rem 0.9rem;
+  border-radius: 16px;
+  background: rgba(245, 254, 249, 0.92);
+  border: 1px solid rgba(17, 121, 93, 0.08);
+}
+
+.decision-meter-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.45rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.decision-meter-track {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.decision-meter-zone {
+  display: block;
+  height: 10px;
+  border-radius: 999px;
+}
+
+.decision-meter-zone-safe {
+  background: linear-gradient(90deg, #1f9d68, #73c79d);
+}
+
+.decision-meter-zone-caution {
+  background: linear-gradient(90deg, #f1c84b, #f5dc88);
+}
+
+.decision-meter-zone-stop {
+  background: linear-gradient(90deg, #e25555, #ef8f8f);
+}
+
+.decision-meter-marker {
+  position: absolute;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #17382f;
+  border: 3px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 10px 24px rgba(23, 56, 47, 0.16);
+  transform: translate(-50%, -50%);
+}
+
+.decision-meter-note {
+  margin: 0.55rem 0 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
 .pill {
   display: inline-flex;
   align-items: center;
@@ -659,13 +754,9 @@ p {
 .category-list,
 .expense-list {
   display: grid;
-  gap: 0.75rem;
-  margin-top: 1rem;
-}
-
-.categories-card .category-list,
-.expenses-card .expense-list {
-  min-height: 100%;
+  gap: 0.6rem;
+  margin-top: 0.75rem;
+  align-content: start;
 }
 
 .category-row,
@@ -689,6 +780,12 @@ p {
   align-items: center;
 }
 
+.expense-row-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .expense-meta {
   display: flex;
   flex-wrap: wrap;
@@ -700,6 +797,25 @@ p {
   color: var(--text);
 }
 
+.expense-delete {
+  min-height: 2.2rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid rgba(226, 85, 85, 0.24);
+  background: rgba(226, 85, 85, 0.1);
+  color: #a53a3a;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 180ms ease, transform 180ms ease;
+}
+
+.expense-delete:hover,
+.expense-delete:focus-visible {
+  background: rgba(226, 85, 85, 0.16);
+  transform: translateY(-1px);
+}
+
 .expenses-head {
   display: flex;
   justify-content: space-between;
@@ -709,70 +825,86 @@ p {
 
 .empty-state {
   color: var(--muted);
-  padding: 1rem 0;
+  padding: 0.2rem 0 0.1rem;
+  margin: 0;
 }
 
 .empty-panel {
   display: grid;
-  gap: 1rem;
+  gap: 0.55rem;
   align-content: start;
-  min-height: 100%;
 }
 
 .empty-panel-wide {
-  gap: 1.1rem;
-}
-
-.starter-tags {
-  display: flex;
-  flex-wrap: wrap;
   gap: 0.65rem;
 }
 
-.starter-tag {
-  display: inline-flex;
-  align-items: center;
-  min-height: 2.2rem;
-  padding: 0.4rem 0.8rem;
-  border-radius: 999px;
-  background: rgba(245, 254, 249, 0.96);
-  border: 1px solid rgba(17, 121, 93, 0.1);
-  color: var(--text);
-  font-weight: 600;
+.preview-chart,
+.activity-preview {
+  display: grid;
+  gap: 0.5rem;
 }
 
-.empty-tip-card,
-.starter-item {
-  padding: 1rem;
-  border-radius: 18px;
+.preview-chart-row,
+.activity-preview-row {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 14px;
   background: rgba(245, 254, 249, 0.92);
   border: 1px solid rgba(17, 121, 93, 0.08);
 }
 
-.empty-tip-card strong,
-.starter-item strong {
+.preview-chart-row span,
+.activity-preview-row span {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.preview-chart-row span:first-child {
   color: var(--text);
 }
 
-.empty-tip-card p {
-  margin: 0.45rem 0 0;
+.preview-track {
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(23, 56, 47, 0.08);
+  overflow: hidden;
 }
 
-.starter-list {
-  display: grid;
-  gap: 0.8rem;
+.preview-fill {
+  height: 100%;
+  border-radius: inherit;
 }
 
-.starter-item {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
+.preview-fill-food {
+  width: 78%;
+  background: linear-gradient(90deg, #e25555, #ef8f8f);
+}
+
+.preview-fill-transport {
+  width: 56%;
+  background: linear-gradient(90deg, #f1c84b, #f5dc88);
+}
+
+.preview-fill-school {
+  width: 66%;
+  background: linear-gradient(90deg, #1f9d68, #73c79d);
+}
+
+.preview-fill-bills {
+  width: 42%;
+  background: linear-gradient(90deg, #5f8f84, #a8c9be);
+}
+
+.activity-preview-row {
+  grid-template-columns: 1fr auto;
   align-items: center;
 }
 
-.starter-item span {
-  color: var(--muted);
-  font-weight: 600;
+.activity-preview-row strong {
+  color: var(--text);
 }
 
 .site-footer {

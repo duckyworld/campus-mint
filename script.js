@@ -30,6 +30,7 @@ const goalStatus = document.querySelector("#goal-status");
 const decisionTitle = document.querySelector("#decision-title");
 const decisionText = document.querySelector("#decision-text");
 const decisionBadge = document.querySelector("#decision-badge");
+const decisionVisual = document.querySelector("#decision-visual");
 const categoryList = document.querySelector("#category-list");
 const expenseList = document.querySelector("#expense-list");
 const budgetChart = document.querySelector("#budget-chart");
@@ -185,9 +186,9 @@ function renderChart() {
   const unallocatedDeg = Math.max(0, 360 - spentDeg - goalDeg - safeDeg);
 
   budgetChart.style.background = `conic-gradient(
-    #ff7b54 0deg ${spentDeg}deg,
-    #ffd86a ${spentDeg}deg ${spentDeg + goalDeg}deg,
-    #12a594 ${spentDeg + goalDeg}deg ${spentDeg + goalDeg + safeDeg}deg,
+    #e25555 0deg ${spentDeg}deg,
+    #f1c84b ${spentDeg}deg ${spentDeg + goalDeg}deg,
+    #1f9d68 ${spentDeg + goalDeg}deg ${spentDeg + goalDeg + safeDeg}deg,
     rgba(23, 50, 74, 0.12) ${spentDeg + goalDeg + safeDeg}deg ${spentDeg + goalDeg + safeDeg + unallocatedDeg}deg
   )`;
 
@@ -285,15 +286,19 @@ function renderCategories() {
     categoryList.innerHTML = `
       <section class="empty-panel">
         <p class="empty-state">No spending categories yet. Add your first expense to see where your money goes.</p>
-        <div class="starter-tags" aria-label="Suggested categories">
-          <span class="starter-tag">Food</span>
-          <span class="starter-tag">Transport</span>
-          <span class="starter-tag">School</span>
-          <span class="starter-tag">Bills</span>
-        </div>
-        <div class="empty-tip-card">
-          <strong>Quick start</strong>
-          <p>Most students begin by logging one meal, one ride, and one school cost so patterns show up faster.</p>
+        <div class="preview-chart" aria-label="Category preview chart">
+          <div class="preview-chart-row">
+            <span>Food</span>
+            <div class="preview-track"><div class="preview-fill preview-fill-food"></div></div>
+          </div>
+          <div class="preview-chart-row">
+            <span>Transport</span>
+            <div class="preview-track"><div class="preview-fill preview-fill-transport"></div></div>
+          </div>
+          <div class="preview-chart-row">
+            <span>School</span>
+            <div class="preview-track"><div class="preview-fill preview-fill-school"></div></div>
+          </div>
         </div>
       </section>
     `;
@@ -319,18 +324,14 @@ function renderExpenses() {
     expenseList.innerHTML = `
       <section class="empty-panel empty-panel-wide">
         <p class="empty-state">No expenses added yet. Try logging food, transport, books, or a social purchase.</p>
-        <div class="starter-list" aria-label="Starter expense ideas">
-          <article class="starter-item">
+        <div class="activity-preview" aria-label="Recent spending preview">
+          <article class="activity-preview-row">
             <strong>Dining hall top-up</strong>
             <span>Food</span>
           </article>
-          <article class="starter-item">
+          <article class="activity-preview-row">
             <strong>Bus pass reload</strong>
             <span>Transport</span>
-          </article>
-          <article class="starter-item">
-            <strong>Notebook + supplies</strong>
-            <span>School</span>
           </article>
         </div>
       </section>
@@ -339,12 +340,16 @@ function renderExpenses() {
   }
 
   expenseList.innerHTML = [...state.expenses]
+    .map((expense, index) => ({ expense, index }))
     .reverse()
-    .map((expense) => `
+    .map(({ expense, index }) => `
       <article class="expense-row">
         <div class="expense-row-head">
           <strong>${expense.name}</strong>
-          <strong>${formatCurrency(Number(expense.amount || 0))}</strong>
+          <div class="expense-row-actions">
+            <strong>${formatCurrency(Number(expense.amount || 0))}</strong>
+            <button class="expense-delete" type="button" data-index="${index}" aria-label="Delete ${expense.name}">Delete</button>
+          </div>
         </div>
         <div class="expense-meta">
           <span class="pill pill-soft">${expense.category}</span>
@@ -356,7 +361,7 @@ function renderExpenses() {
 }
 
 function renderDecision() {
-  if (!decisionTitle || !decisionText || !decisionBadge) {
+  if (!decisionTitle || !decisionText || !decisionBadge || !decisionVisual) {
     return;
   }
 
@@ -365,16 +370,53 @@ function renderDecision() {
     decisionText.textContent = "Add a purchase and CampusMint will tell you whether it looks like a need, a want, or something worth pausing on before you spend.";
     decisionBadge.textContent = "Waiting for a purchase";
     decisionBadge.className = "pill";
+    decisionVisual.innerHTML = `
+      <div class="decision-meter">
+        <div class="decision-meter-head">
+          <span>Need</span>
+          <span>Pause</span>
+        </div>
+        <div class="decision-meter-track">
+          <span class="decision-meter-zone decision-meter-zone-safe"></span>
+          <span class="decision-meter-zone decision-meter-zone-caution"></span>
+          <span class="decision-meter-zone decision-meter-zone-stop"></span>
+          <span class="decision-meter-marker" style="left: 42%;"></span>
+        </div>
+        <p class="decision-meter-note">Start with food, transport, and class costs before fun spending.</p>
+      </div>
+    `;
     return;
   }
 
   const latestExpense = state.expenses[state.expenses.length - 1];
   const decision = getDecision(latestExpense);
+  let markerLeft = "78%";
+
+  if (decision.badgeClass.includes("pill-need")) {
+    markerLeft = "20%";
+  } else if (decision.badgeClass.includes("pill-want")) {
+    markerLeft = "58%";
+  }
 
   decisionTitle.textContent = decision.title;
   decisionText.textContent = decision.text;
   decisionBadge.textContent = decision.badge;
   decisionBadge.className = decision.badgeClass;
+  decisionVisual.innerHTML = `
+    <div class="decision-meter">
+      <div class="decision-meter-head">
+        <span>Need</span>
+        <span>Pause</span>
+      </div>
+      <div class="decision-meter-track">
+        <span class="decision-meter-zone decision-meter-zone-safe"></span>
+        <span class="decision-meter-zone decision-meter-zone-caution"></span>
+        <span class="decision-meter-zone decision-meter-zone-stop"></span>
+        <span class="decision-meter-marker" style="left: ${markerLeft};"></span>
+      </div>
+      <p class="decision-meter-note">${latestExpense.category} spending marked as ${latestExpense.reason.toLowerCase()}.</p>
+    </div>
+  `;
 }
 
 function renderApp() {
@@ -431,6 +473,30 @@ if (expenseForm) {
     expenseForm.reset();
     expenseCategoryInput.value = "Food";
     expenseReasonInput.value = "Need";
+  });
+}
+
+if (expenseList) {
+  expenseList.addEventListener("click", (event) => {
+    const target = event.target;
+
+    if (!(target instanceof HTMLElement)) {
+      return;
+    }
+
+    const deleteButton = target.closest(".expense-delete");
+    if (!deleteButton) {
+      return;
+    }
+
+    const index = Number(deleteButton.getAttribute("data-index"));
+    if (Number.isNaN(index)) {
+      return;
+    }
+
+    state.expenses.splice(index, 1);
+    saveState();
+    renderApp();
   });
 }
 
